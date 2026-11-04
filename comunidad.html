@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Comunidad · Zeobent Cat’s</title>
+<meta name="description" content="Historias y fotos de mascotas y opiniones del público sobre Zeobent Cat’s Premium Trio.">
+<meta property="og:title" content="Comunidad · Zeobent Cat’s">
+<meta property="og:description" content="Historias y fotos de mascotas y opiniones del público sobre Zeobent Cat’s Premium Trio.">
+<meta property="og:image" content="assets/logo-usa.webp">
+<link rel="icon" href="assets/logo-usa.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="top"></div>
+<div class="page-h"><h1 data-i="cmh">Comunidad Zeobent</h1><p data-i="i4">Comparta una foto de su mascota y su experiencia. Cada publicación se revisa y aprueba antes de mostrarse.</p></div>
+<main>
+<section class="sec pink" id="historias">
+  <h2 data-i="tb1">Historias de mascotas</h2>
+  <div id="gal"></div>
+  <form data-s="Historia y foto de mascota - Zeobent Cat's" class="box2">
+    <div class="two">
+      <label><span data-i="f_name">Su nombre</span><input name="nombre" required></label>
+      <label><span data-i="f_pet">Nombre de su mascota</span><input name="mascota" required></label>
+    </div>
+    <div class="two">
+      <label><span data-i="f_city">Ciudad</span><input name="ciudad"></label>
+      <label><span data-i="f_mail">Email (no se publica)</span><input type="email" name="email" required></label>
+    </div>
+    <label><span data-i="f_story">Su historia</span><textarea name="historia" rows="4" required></textarea></label>
+    <label><span data-i="f_photo">Foto de su mascota</span><input type="file" name="foto" accept="image/*" required></label>
+    <label class="chk"><input type="checkbox" required><span data-i="f_ok">Acepto que publiquen mi foto y mi relato. No envío fotos de menores.</span></label>
+    <input class="hp" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <p class="note" data-i="pubnote">Se publican nombre, ciudad, mascota, foto e historia luego de la aprobación; el email no se publica.</p>
+    <button class="btn alt" data-i="f_send">Enviar</button><p class="st" role="status"></p>
+  </form>
+</section>
+<section class="sec" id="opiniones">
+  <h2 data-i="op_t">Opiniones sobre el producto</h2>
+  <div id="ops" class="ops"></div>
+  <form data-s="Opinión - Zeobent Cat's" class="box2">
+    <div class="two">
+      <label><span data-i="f_name">Su nombre</span><input name="nombre" required></label>
+      <label><span data-i="f_city">Ciudad</span><input name="ciudad"></label>
+    </div>
+    <div class="two">
+      <label><span data-i="f_mail">Email (no se publica)</span><input type="email" name="email" required></label>
+      <label><span data-i="f_rate">Puntaje</span><select name="puntaje"><option value="5">★★★★★ (5)</option><option value="4">★★★★☆ (4)</option><option value="3">★★★☆☆ (3)</option><option value="2">★★☆☆☆ (2)</option><option value="1">★☆☆☆☆ (1)</option></select></label>
+    </div>
+    <label><span data-i="f_op">Su opinión</span><textarea name="opinion" rows="4" required></textarea></label>
+    <label class="chk"><input type="checkbox" required><span data-i="f_ok2">Acepto que publiquen mi nombre y mi opinión.</span></label>
+    <input class="hp" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <button class="btn" data-i="f_send">Enviar</button><p class="st" role="status"></p>
+  </form>
+</section>
+</main>
+<div id="foot"></div>
+<script src="data/config.js"></script>
+<script src="data/products.js"></script>
+<script src="data/gallery.js"></script>
+<script src="data/opiniones.js"></script>
+<script src="data/vets.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pedidos · Zeobent Cat’s Premium Trio</title>
+<meta name="description" content="Solicitud de producto para consumidores, minoristas y mayoristas, de Argentina o del exterior.">
+<meta property="og:title" content="Pedidos · Zeobent Cat’s Premium Trio">
+<meta property="og:description" content="Solicitud de producto para consumidores, minoristas y mayoristas, de Argentina o del exterior.">
+<meta property="og:image" content="assets/logo-usa.webp">
+<link rel="icon" href="assets/logo-usa.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="top"></div>
+<div class="page-h"><h1 data-i="t6">Solicitar producto</h1><p data-i="i6">Consumidores, minoristas y mayoristas, de Argentina o del exterior. Costos y forma de pago se acuerdan según el destino.</p></div>
+<main>
+<section class="sec">
+  <form data-s="Pedido - Zeobent Cat's" class="box2">
+    <div class="two">
+      <label><span data-i="f_type">Soy</span><select name="tipo"><option data-i="o1">Consumidor final</option><option data-i="o2">Minorista</option><option data-i="o3">Mayorista / distribuidor</option></select></label>
+      <label><span data-i="f_country">País y ciudad</span><input name="pais" required></label>
+    </div>
+    <div class="two">
+      <label><span data-i="f_name">Su nombre</span><input name="nombre" required></label>
+      <label><span>Email</span><input type="email" name="email" required></label>
+    </div>
+    <div class="two">
+      <label><span data-i="f_prod">Producto</span><select name="producto"><option data-id="pack-lanzamiento">Pack Lanzamiento 3 × 4 kg (12 kg)</option><option data-id="bolsa-4kg">Bolsa de 3,6 kg / 4 kg</option><option data-id="bolsa-10kg">Bolsa de 10 kg</option><option data-id="caja-18lb">Caja de 18.5 lb</option><option data-id="granel" data-i="pb2">A granel</option><option data-id="espera" data-i="pw">Lista de espera: merch y feeder</option></select></label>
+      <label><span data-i="f_qty">Cantidad</span><input name="cantidad" required></label>
+    </div>
+    <label><span data-i="f_msg">Mensaje</span><textarea name="mensaje" rows="3"></textarea></label>
+    <input class="hp" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <button class="btn" data-i="f_send">Enviar</button><p class="st" role="status"></p>
+  </form>
+</section>
+</main>
+<div id="foot"></div>
+<script src="data/config.js"></script>
+<script src="data/products.js"></script>
+<script src="data/gallery.js"></script>
+<script src="data/opiniones.js"></script>
+<script src="data/vets.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Carrito · Zeobent Cat’s</title>
+<meta name="description" content="Carrito de compras Zeobent Cat’s Premium Trio.">
+<meta property="og:title" content="Carrito · Zeobent Cat’s">
+<meta property="og:description" content="Carrito de compras Zeobent Cat’s Premium Trio.">
+<meta property="og:image" content="assets/logo-usa.webp">
+<link rel="icon" href="assets/logo-usa.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="top"></div>
+<div class="page-h"><h1 data-i="kh">Carrito de compras</h1></div>
+<main>
+<section class="sec">
+  <div id="cartbox">
+    <div class="cart">
+      <div id="cartlines"></div>
+      <div id="sum" class="sum"></div>
+    </div>
+  </div>
+  <div id="checkout" hidden>
+    <div class="panel"><h3 data-i="k1">Comprar por Mercado Libre</h3><p class="note" data-i="mlvalid">Válida en toda la República Argentina a través de Mercado Libre.</p><div id="mllist"></div></div>
+    <div class="panel"><h3 data-i="k2">Envío particular en Rosario y zona de influencia</h3>
+      <form data-s="Pedido con envío en Rosario - Zeobent Cat's" data-cart="1">
+        <div class="two"><label><span data-i="f_name">Su nombre</span><input name="nombre" required></label><label><span data-i="f_phone">Teléfono</span><input name="telefono" type="tel" required></label></div>
+        <div class="two"><label><span>Email</span><input type="email" name="email" required></label><label><span data-i="f_loc">Localidad</span><input name="localidad" required></label></div>
+        <label><span data-i="f_addr">Domicilio de entrega</span><input name="domicilio" required></label>
+        <label><span data-i="f_notes">Observaciones</span><textarea name="observaciones" rows="2"></textarea></label>
+        <label class="chk"><input type="checkbox" required><span data-i="k_ok">Confirmo que el domicilio de entrega se encuentra en Rosario o zona de influencia.</span></label>
+        <input class="hp" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button class="btn" data-i="k_send">Enviar pedido</button><p class="st" role="status"></p>
+      </form>
+    </div>
+  </div>
+</section>
+</main>
+<div id="foot"></div>
+<script src="data/config.js"></script>
+<script src="data/products.js"></script>
+<script src="data/gallery.js"></script>
+<script src="data/opiniones.js"></script>
+<script src="data/vets.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
