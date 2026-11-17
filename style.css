@@ -188,3 +188,10 @@ footer h4{margin:0 0 8px;font-family:Fredoka,sans-serif;color:var(--or)}footer a
 @media(max-width:900px){.phero{grid-template-columns:1fr}.bento{grid-template-columns:1fr 1fr}.tile,.tile.big{grid-column:span 2}.flow{grid-template-columns:1fr}.flow li,.flow li:first-child,.flow li:last-child{border-radius:12px;margin-bottom:10px}.eco{grid-template-columns:1fr}.eco-main{grid-row:auto}.pitem{border-left:0;border-top:1px solid var(--line)}}
 
 .sec>.lead{margin-left:max(0px,calc(50% - 570px))!important;margin-right:auto!important}
+
+/* Cobros */
+.paym{border:0;padding:0;margin:12px 0}.paym legend{font-weight:700;margin-bottom:4px}
+.radio{display:flex;gap:10px;align-items:center;padding:10px 12px;border:2px solid var(--line);border-radius:10px;margin:6px 0;cursor:pointer;font-weight:700;background:#fff}
+.radio input{width:auto;margin:0}.radio:has(input:checked){border-color:var(--fb);background:#fff5fa}
+.paybox .qrimg{display:block;max-width:240px;width:100%;margin:8px 0;border:1px solid var(--line);border-radius:12px;background:#fff}
+.payd{list-style:none;padding:0;margin:8px 0}.payd li{padding:7px 0;border-bottom:1px dashed var(--line);overflow-wrap:anywhere}

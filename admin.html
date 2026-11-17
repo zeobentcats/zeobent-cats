@@ -21,7 +21,7 @@
     </div>
     <button class="btn" id="go" type="button">Convertir</button>
     <p id="r1" class="st" role="status"></p><img id="pv" alt="" style="max-width:260px">
-    <p class="note">Productos: <code>assets/productos/pack-lanzamiento.webp</code>, <code>bolsa-4kg.webp</code>, <code>bolsa-9kg.webp</code>, <code>granel.webp</code>. Fotos de la comunidad aprobadas: <code>assets/comunidad/nombre.webp</code>.</p>
+    <p class="note">Productos: <code>assets/productos/pack-lanzamiento.webp</code>, <code>bolsa-4kg.webp</code>, <code>bolsa-10kg.webp</code>, <code>caja-18lb.webp</code>, <code>granel.webp</code>. Fotos de la comunidad aprobadas: <code>assets/comunidad/nombre.webp</code>.</p>
   </div>
 </section>
 <section class="sec white">
@@ -43,6 +43,14 @@
   <div class="box2">
     <h3>Descuento por cantidad</h3>
     <div class="two"><label>Desde cuántas unidades del mismo producto<input id="dmin" type="number" min="2"></label><label>Porcentaje de descuento (%)<input id="dpct" type="number" min="0" max="90"></label></div>
+    <label>Dirección del servidor de pedidos y cobros (termina en .workers.dev; vacío = sin cobros en la web)<input id="api" placeholder="https://zeo-whatsapp-bot.SU-SUBDOMINIO.workers.dev"></label>
+    <p class="note">El panel privado de pedidos, enlaces de Mercado Libre, formas de pago y remitos está en <code>esa-dirección/admin</code> (con su clave de administración).</p>
+    <h3>Datos de pago que muestra el carrito</h3>
+    <label>WhatsApp Business que recibe los pedidos (solo dígitos, ej. 5493415421376)<input id="pwa"></label>
+    <label>Tarjeta: link de pago de Mercado Pago<input id="ptl" placeholder="https://mpago.la/..."></label>
+    <label>QR Mercado Pago: alias<input id="pqa"></label>
+    <label>QR Mercado Pago: archivo de imagen (suba el PNG a la carpeta assets de GitHub y escriba la ruta)<input id="pqi" placeholder="assets/qr-mercadopago.png"></label>
+    <label>Transferencia: alias<input id="pta"></label><label>CBU / CVU<input id="ptc"></label><label>Titular<input id="ptt"></label><label>Banco<input id="ptb"></label><label>CUIT / CUIL<input id="ptu"></label>
     <button class="btn alt" id="dl-cfg" type="button">Descargar config.js</button>
   </div>
   <div id="pe" class="ops"></div>
@@ -63,12 +71,12 @@ $('#gen').onclick=()=>{const h=$('#t').value==='h',o=h?{foto:$('#ph').value,masc
  $('#out').value=JSON.stringify(o,null,2)};
 
 const P=JSON.parse(JSON.stringify((window.ZC&&ZC.products)||[])),C=Object.assign({min:10,pct:10},(window.ZC&&ZC.config&&ZC.config.desc)||{});
-$('#dmin').value=C.min;$('#dpct').value=C.pct;
-const TXT=[['nombre','Nombre completo','text'],['corto','Nombre corto','text'],['descripcion','Descripción','textarea'],['precio','Precio en pesos (vacío = “Consultar precio”)','number'],['etiqueta','Etiqueta de la oferta (ej. Oferta de noviembre; vacío = Oferta de lanzamiento)','text'],['kg','Kilos totales (opcional: muestra el precio por kg)','number'],['ml_url','Enlace de Mercado Libre (publicación o link de pago)','text'],['img','Imagen principal (ruta del archivo)','text']];
+$('#dmin').value=C.min;$('#dpct').value=C.pct;$('#api').value=(window.ZC&&ZC.config&&ZC.config.api)||'';{const C2=(window.ZC&&ZC.config)||{},P=C2.pagos||{};$('#pwa').value=C2.wa||'5493415421376';$('#ptl').value=(P.tarjeta||{}).link||'';$('#pqa').value=(P.mp_qr||{}).alias||'';$('#pqi').value=(P.mp_qr||{}).qr||'';const T2=P.transferencia||{};$('#pta').value=T2.alias||'';$('#ptc').value=T2.cbu||'';$('#ptt').value=T2.titular||'';$('#ptb').value=T2.banco||'';$('#ptu').value=T2.cuit||'';}
+const TXT=[['nombre','Nombre completo','text'],['corto','Nombre corto','text'],['descripcion','Descripción','textarea'],['precio','Precio en pesos (vacío = “Consultar precio”)','number'],['etiqueta','Etiqueta de la oferta (ej. Oferta de noviembre; vacío = Oferta de lanzamiento)','text'],['kg','Kilos totales (opcional: muestra el precio por kg)','number'],['ml_url','Enlace de Mercado Libre (publicación o link de pago)','text'],['amazon_url','Enlace de Amazon (para compradores fuera de Argentina; lo usa Zeo)','text'],['img','Imagen principal (ruta del archivo)','text']];
 const CHK=[['visible','Visible en la web',1],['oferta','Mostrar como oferta (inicio, Ofertas y barra superior)',0],['promo','Etiqueta “Precio promocional”',0],['envio_gratis_local','Envío gratis en Rosario y zona de influencia',0],['descuento','Aplicar descuento por cantidad',1]];
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function out(){return P.map(p=>{const o=Object.assign({},p);o.precio=(p.precio===''||p.precio==null||isNaN(p.precio))?null:+p.precio;if(p.kg===''||p.kg==null||isNaN(p.kg))delete o.kg;else o.kg=+p.kg;
- if(p.visible!==false)delete o.visible;if(p.descuento!==false)delete o.descuento;['oferta','promo','envio_gratis_local'].forEach(k=>{o[k]=!!p[k]});if(!o.ml_url)o.ml_url='';if(!o.etiqueta)delete o.etiqueta;return o})}
+ if(p.visible!==false)delete o.visible;if(p.descuento!==false)delete o.descuento;['oferta','promo','envio_gratis_local'].forEach(k=>{o[k]=!!p[k]});if(!o.ml_url)o.ml_url='';if(!o.amazon_url)o.amazon_url='';if(!o.etiqueta)delete o.etiqueta;return o})}
 const js=()=>'/* Datos editables: products. */\nwindow.ZC = window.ZC || {};\nwindow.ZC.products = '+JSON.stringify(out(),null,2)+';\n';
 function draw(){$('#pe').innerHTML=P.map((p,i)=>`<div class="box2" data-i="${i}"><h3>${esc(p.corto||p.nombre||p.id)} <small style="font-weight:400">(${esc(p.id)})</small></h3>
  <div class="two">${TXT.filter(t=>t[2]!=='textarea').map(t=>`<label>${t[1]}<input data-f="${t[0]}" type="${t[2]}" value="${esc(p[t[0]])}"></label>`).join('')}</div>
@@ -78,10 +86,10 @@ function draw(){$('#pe').innerHTML=P.map((p,i)=>`<div class="box2" data-i="${i}"
  <button class="link" data-del="${i}" type="button">Eliminar este producto</button></div>`).join('');$('#prev').value=js()}
 $('#pe').addEventListener('input',e=>{const b=e.target.closest('[data-i]'),p=P[+b.dataset.i];if(e.target.dataset.f)p[e.target.dataset.f]=e.target.value;else if(e.target.dataset.d)p.detalles=e.target.value.split('\n').map(x=>x.trim()).filter(Boolean);else if(e.target.dataset.c)p[e.target.dataset.c]=e.target.checked;$('#prev').value=js()});
 $('#pe').addEventListener('click',e=>{const d=e.target.dataset.del;if(d!==undefined&&confirm('¿Eliminar este producto?')){P.splice(+d,1);draw()}});
-$('#addp').onclick=()=>{const id=(prompt('Identificador corto, sin espacios (ej. bolsa-20kg):')||'').trim().toLowerCase().replace(/[^a-z0-9-]/g,'-');if(!id||P.some(p=>p.id===id)){$('#pst').textContent='Identificador vacío o ya existente.';return}P.push({id,nombre:'Zeobent Cat’s · Nuevo producto',corto:'Nuevo producto',categoria:'Piedra sanitaria',descripcion:'',detalles:[],img:'assets/productos/'+id+'.webp',precio:null,oferta:false,envio_gratis_local:false,ml_url:''});draw();$('#pst').textContent='Producto agregado: suba su imagen a assets/productos/'+id+'.webp (use la herramienta 1).'};
+$('#addp').onclick=()=>{const id=(prompt('Identificador corto, sin espacios (ej. bolsa-20kg):')||'').trim().toLowerCase().replace(/[^a-z0-9-]/g,'-');if(!id||P.some(p=>p.id===id)){$('#pst').textContent='Identificador vacío o ya existente.';return}P.push({id,nombre:'Zeobent Cat’s · Nuevo producto',corto:'Nuevo producto',categoria:'Piedra sanitaria',descripcion:'',detalles:[],img:'assets/productos/'+id+'.webp',precio:null,oferta:false,envio_gratis_local:false,ml_url:'',amazon_url:''});draw();$('#pst').textContent='Producto agregado: suba su imagen a assets/productos/'+id+'.webp (use la herramienta 1).'};
 function dl(name,text){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'text/javascript'}));a.download=name;a.click()}
 $('#dl-prod').onclick=()=>{dl('products.js',js());$('#pst').textContent='Descargado products.js: reemplace data/products.js en el repositorio.'};
-$('#dl-cfg').onclick=()=>{dl('config.js','/* Configuración editable desde admin.html */\nwindow.ZC = window.ZC || {};\nwindow.ZC.config = '+JSON.stringify({desc:{min:+$('#dmin').value||10,pct:+$('#dpct').value||0}},null,2)+';\n');$('#pst').textContent='Descargado config.js: reemplace data/config.js en el repositorio.'};
+$('#dl-cfg').onclick=()=>{dl('config.js','/* Configuración editable desde admin.html */\nwindow.ZC = window.ZC || {};\nwindow.ZC.config = '+JSON.stringify({desc:{min:+$('#dmin').value||10,pct:+$('#dpct').value||0},api:($('#api').value||'').trim().replace(/\/+$/,''),wa:($('#pwa').value||'').replace(/\D/g,'')||'5493415421376',pagos:{tarjeta:{link:$('#ptl').value.trim()},mp_qr:{alias:$('#pqa').value.trim(),qr:$('#pqi').value.trim()},transferencia:{alias:$('#pta').value.trim(),cbu:$('#ptc').value.trim(),titular:$('#ptt').value.trim(),banco:$('#ptb').value.trim(),cuit:$('#ptu').value.trim()}}},null,2)+';\n');$('#pst').textContent='Descargado config.js: reemplace data/config.js en el repositorio.'};
 draw();
 </script>
 </body>

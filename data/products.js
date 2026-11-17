@@ -17,7 +17,8 @@ window.ZC.products = [
     "kg": 12,
     "oferta": true,
     "envio_gratis_local": true,
-    "ml_url": ""
+    "ml_url": "",
+    "amazon_url": ""
   },
   {
     "id": "bolsa-4kg",
@@ -33,7 +34,8 @@ window.ZC.products = [
     "precio": 4500,
     "oferta": false,
     "envio_gratis_local": false,
-    "ml_url": ""
+    "ml_url": "",
+    "amazon_url": ""
   },
   {
     "id": "bolsa-10kg",
@@ -51,7 +53,8 @@ window.ZC.products = [
     "promo": true,
     "oferta": false,
     "envio_gratis_local": false,
-    "ml_url": ""
+    "ml_url": "",
+    "amazon_url": ""
   },
   {
     "id": "caja-18lb",
@@ -69,7 +72,8 @@ window.ZC.products = [
     "precio": null,
     "oferta": false,
     "envio_gratis_local": false,
-    "ml_url": ""
+    "ml_url": "",
+    "amazon_url": ""
   },
   {
     "id": "granel",
@@ -84,7 +88,8 @@ window.ZC.products = [
     "precio": null,
     "oferta": false,
     "envio_gratis_local": false,
-    "ml_url": ""
+    "ml_url": "",
+    "amazon_url": ""
   },
   {
     "id": "bolsa-15kg",
@@ -101,6 +106,7 @@ window.ZC.products = [
     "kg": 15,
     "oferta": false,
     "envio_gratis_local": false,
-    "ml_url": ""
+    "ml_url": "",
+    "amazon_url": ""
   }
 ];

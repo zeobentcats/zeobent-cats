@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="zeo.css">
 </head>
 <body>
 <div id="top"></div>
@@ -24,9 +25,22 @@
       <div id="sum" class="sum"></div>
     </div>
   </div>
+  <div id="payres" hidden></div>
   <div id="checkout" hidden>
-    <div class="panel"><h3 data-i="k1">Comprar por Mercado Libre</h3><p class="note" data-i="mlvalid">Válida en toda la República Argentina a través de Mercado Libre.</p><div id="mllist"></div></div>
-    <div class="panel"><h3 data-i="k2">Envío particular en Rosario y zona de influencia</h3>
+    <div class="panel" id="mlpanel"><h3 data-i="k1">Comprar por Mercado Libre</h3><p class="note" data-i="mlvalid">Válida en toda la República Argentina a través de Mercado Libre.</p><div id="mllist"></div></div>
+    <div class="panel" id="paypanel" hidden><h3 data-i="pg_h">Pagar ahora</h3><p class="note" data-i="pg_p">Complete sus datos, elija cómo pagar y recibirá las instrucciones al instante y también por WhatsApp.</p>
+      <form id="payform">
+        <div class="two"><label><span data-i="f_name">Su nombre</span><input name="nombre" required maxlength="80" autocomplete="name"></label><label><span>WhatsApp</span><input name="telefono" type="tel" required maxlength="30" autocomplete="tel" placeholder="341 555 5555"></label></div>
+        <div class="two"><label><span>Email</span><input type="email" name="email" required maxlength="120" autocomplete="email"></label><label><span data-i="f_loc">Localidad</span><input name="localidad" required maxlength="80"></label></div>
+        <label><span data-i="f_addr">Domicilio de entrega</span><input name="domicilio" required maxlength="160" autocomplete="street-address"></label>
+        <label><span data-i="f_notes">Observaciones</span><textarea name="observaciones" rows="2" maxlength="300"></textarea></label>
+        <fieldset class="paym"><legend data-i="pg_m">Forma de pago</legend><div id="paym"></div></fieldset>
+        <label class="chk"><input type="checkbox" name="mayor" required><span data-i="pg_18">Soy mayor de 18 años y acepto que mis datos se usen para gestionar este pedido.</span></label>
+        <input class="hp" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button class="btn" data-i="pg_send">Confirmar pedido</button><p class="st" role="status"></p>
+      </form>
+    </div>
+    <div class="panel" id="oldform"><h3 data-i="k2">Envío particular en Rosario y zona de influencia</h3>
       <form data-s="Pedido con envío en Rosario - Zeobent Cat's" data-cart="1">
         <div class="two"><label><span data-i="f_name">Su nombre</span><input name="nombre" required></label><label><span data-i="f_phone">Teléfono</span><input name="telefono" type="tel" required></label></div>
         <div class="two"><label><span>Email</span><input type="email" name="email" required></label><label><span data-i="f_loc">Localidad</span><input name="localidad" required></label></div>
@@ -46,6 +60,8 @@
 <script src="data/gallery.js"></script>
 <script src="data/opiniones.js"></script>
 <script src="data/vets.js"></script>
+<script src="data/zeo.js"></script>
 <script src="app.js"></script>
+<script src="zeo.js"></script>
 </body>
 </html>

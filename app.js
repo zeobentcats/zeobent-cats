@@ -2,12 +2,17 @@
 // endpoint: URL de Formspree / Web3Forms / Getform para recibir formularios sin abrir el correo.
 // Los enlaces de Mercado Libre de cada producto se cargan en data/products.json (campo "ml_url").
 // desc: descuento por cantidad. Desde `min` unidades del mismo producto se aplica `pct`% sobre esa línea.
-const CFG = { email: 'zeolitcatsusa@gmail.com', endpoint: '', desc: { min: 10, pct: 10 } };
+// api: dirección del servidor de pedidos y cobros (Worker de Cloudflare, carpeta whatsapp-bot). Se carga en data/config.js (campo "api") o desde admin.html.
+const CFG = { email: 'zeolitcatsusa@gmail.com', endpoint: '', desc: { min: 10, pct: 10 }, api: '', metodos: null, wa: '5493415421376', pagos: {} };
 // El descuento por cantidad se edita desde admin.html (genera data/config.js).
 if (window.ZC && window.ZC.config && window.ZC.config.desc) Object.assign(CFG.desc, window.ZC.config.desc);
+if (window.ZC && window.ZC.config && window.ZC.config.wa) CFG.wa = String(window.ZC.config.wa).replace(/\D/g, '');
+if (window.ZC && window.ZC.config && window.ZC.config.pagos) CFG.pagos = window.ZC.config.pagos;
+if (window.ZC && window.ZC.config && /^https:\/\//.test(window.ZC.config.api || '')) CFG.api = String(window.ZC.config.api).replace(/\/+$/, '');
 
 const T = {
 es: {
+ pg_wa2:'Enviar mi pedido por WhatsApp', pg_sendwa:'Falta un paso: toque el botón para enviarnos el pedido por WhatsApp y lo confirmamos.', pg_proof2:'Envíenos el pedido por WhatsApp: le pasamos los datos de pago, usted paga y nos manda el comprobante; confirmamos el pago y le enviamos el remito.', pg_h:'Pagar ahora', pg_p:'Complete sus datos, elija cómo pagar y recibirá las instrucciones al instante y también por WhatsApp.', pg_m:'Forma de pago', pg_card:'Tarjeta de crédito o débito (link de pago)', pg_qr:'QR de Mercado Pago', pg_tr:'Transferencia a alias / CBU', pg_18:'Soy mayor de 18 años y acepto que mis datos se usen para gestionar este pedido.', pg_send:'Confirmar pedido', pg_wa:'Recibir los datos por WhatsApp', pg_pay:'Pagar con tarjeta', pg_copy:'Copiar', pg_done:'¡Pedido registrado!', pg_order:'Pedido', pg_cardtxt:'Toque el botón para pagar con tarjeta de forma segura en Mercado Pago. Al terminar, el pago se confirma solo.', pg_nolink:'Le enviaremos el link de pago por WhatsApp en breve.', pg_qrtxt:'Escanee el QR desde la app de Mercado Pago (o transfiera al alias) por el total del pedido.', pg_trtxt:'Transfiera el total a estos datos e indique el número de pedido como referencia:', pg_amount:'Importe', pg_ref:'Referencia', pg_proof:'Cuando pague, envíenos el comprobante por WhatsApp y le confirmamos el pago y el remito.', pg_ok:'✅ ¡Pago confirmado! Gracias por su compra.', pg_proofok:'🧾 Recibimos su comprobante: lo estamos verificando.', pg_wait:'Enviando…', pg_err:'No pudimos registrar el pedido. Intente de nuevo o escríbanos por WhatsApp.', pg_pending:'Estado del pedido: pendiente de pago.',
  offer:'Oferta de lanzamiento', free:'Envío gratis en Rosario y zona de influencia',
  freefull:'Envío particular gratuito en el eje urbano de Rosario y zona de influencia.',
  mlvalid:'Válida en toda la República Argentina a través de Mercado Libre.',
@@ -30,7 +35,7 @@ en: {
  t1:'Why Zeobent Cat’s',
  c1:'<b>Clumps</b>Forms firm clumps that scoop out easily.', c2:'<b>Traps odor</b>Its crystals capture ammonia: they don’t cover it, they eliminate it.',
  c3:'<b>Natural</b>Mineral with no chemical additives.', c4:'<b>Hypoallergenic</b>Made for the whole family.', c5:'<b>Long-lasting</b>Replace the litter every 4 weeks.',
- c6:'<b>Second life</b>Once dried and washed with water, it can be reused in orchards and gardens.',
+ c6:'<b>Second life</b>Used litter from healthy cats, dried and washed with water, can be added to compost as a soil restructurer and to speed up composting. It is not applied to growing plants: the soil is used in the garden once treated. Follow the instructions on the box.',
  ch_t:'Ways to buy', ch1:'<b>Mercado Libre</b>Pay and buy on the platform, valid throughout Argentina.', ch2:'<b>Private delivery</b>Delivery in the urban area of Rosario and surrounding area, free in the launch promotion.',
  ch3:'<b>Wholesale and abroad</b>Customers, retailers and wholesalers, in Argentina or abroad. Costs and payment terms are agreed according to destination.',
  cm_t:'Zeobent community', cm_p:'Stories and pet photos shared by our customers.', cm_l:'See all stories',
@@ -47,8 +52,8 @@ en: {
  t5:'Vets and clinics', i5:'News we update every week, plus public links for the care of cats and other pets.', l5:'Useful links',
  t6:'Request product', i6:'Customers, retailers and wholesalers, in Argentina or abroad. Costs and payment terms are agreed according to destination.',
  f_type:'I am', o1:'Final customer', o2:'Retailer', o3:'Wholesaler / distributor', f_country:'Country and city', f_prod:'Product', f_qty:'Quantity', f_msg:'Message', pw:'Waitlist: merch and feeder',
- kh:'Shopping cart', k1:'Buy through Mercado Libre', k2:'Private delivery in Rosario and surrounding area', k_ok:'I confirm that the delivery address is in Rosario or its surrounding area.', f_phone:'Phone', f_addr:'Address', f_loc:'Locality', f_notes:'Notes', k_send:'Send order',
- pk_p:"Zeobent Cat’s Premium Trio is a hyper-clumping, dust-free, hypoallergenic cat litter, with clinoptilolite and bentonite in an exclusive formula.", pd_t:"What sets us apart", pd_p:"Features that set Zeobent Cat’s apart from ordinary cat litter.", d1:"<b>Hyper-clumping</b>Maximum-strength clumping: it forms firm, compact clumps that scoop out easily.", d2:"<b>Dust-free</b>A cleaner environment for your cat and your home.", d3:"<b>Hypoallergenic</b>Made for the whole family.", d4:"<b>Captures odor</b>It traps ammonia: it doesn’t mask it, it eliminates it.", d5:"<b>Natural, no chemicals</b>Top-quality minerals with no chemical additives.", d6:"<b>Regulates moisture</b>It absorbs moisture and captures ammonia gases from urine and feces.", d7:"<b>Long-lasting</b>Replace the litter every 4 weeks.", d8:"<b>Second life</b>Dried and washed with water, it can be reused in orchards and gardens.", cp_t:"Inside the granule", cp_p:"Tap each component to see what it adds.", cp1:"Clinoptilolite (zeolite)", cp2:"Hyper-clumping bentonite", cp3:"Exclusive formula", cp1d:"<b>Real ammonia capture.</b> Each granule contains microscopic crystals that trap moisture and ammonia molecules through Cation Exchange Capacity, a natural mineral process.", cp2d:"<b>Maximum-strength clumping.</b> It binds waste into firm clumps that scoop out easily and keep the litter box clean.", cp3d:"<b>Zeobent Cat’s own blend.</b> It brings together Argentine minerals in an exclusive formula, developed and processed at our plant.", cp_n:"Made with Argentine minerals: bentonites, clinoptilolite (zeolites) and pure diatomite of the highest quality, meeting American market standards.", hw_t:"How it eliminates odor", hw1:"<b>Absorbs</b>Moisture is held inside the granule.", hw2:"<b>Captures</b>The crystals trap ammonia and its odor.", hw3:"<b>Clumps</b>Waste forms a firm clump that is easy to remove.", pr_t:"Top quality at an accessible price", pr_p:"It is a premium product and, even so, we designed it to be accessible to everyone: healthy for the family and for the environment.", pf_t:"Backing and traceability", pf1:"<b>Our own raw materials</b>The raw materials in the formula are our own.", pf2:"<b>Strategically located plant</b>It lets us develop and process the product to the highest quality.", pf3:"<b>American market standards</b>Produced in compliance with United States market standards.", pf4:"<b>Same quality in Mercosur and the United States</b>Simultaneous launch, keeping the highest quality.", pf_a:"It has the approval of the most demanding United States quality standards in performance, health care and environmental care.", ec_t:"More than cat litter", ec_p:"An ecosystem of products that supports your pet’s care.", ec1:"<b>Premium Trio cat litter</b>The core product, in bags, box and bulk.", ec2:"<b>Wi-Fi feeder</b>With camera and sensors, to see whether your pet is eating while you are away. Coming soon.", ec3:"<b>Veterinary and agricultural bedding</b>Developed and processed at our plant.", ec4:"<b>Industrial absorbents</b>Internationally recognized, sold in the United States.", hc1:"Hyper-clumping", hc2:"Dust-free", hc3:"Hypoallergenic", hc4:"Traceable", hl2:"See all features",
+ kh:'Shopping cart', pg_wa2:'Send my order on WhatsApp', pg_sendwa:'One last step: tap the button to send us the order on WhatsApp and we will confirm it.', pg_proof2:'Send us the order on WhatsApp: we share the payment details, you pay and send the receipt; we confirm the payment and send the delivery note.', pg_h:'Pay now', pg_p:'Fill in your details, choose how to pay and you will get the instructions instantly and by WhatsApp.', pg_m:'Payment method', pg_card:'Credit or debit card (payment link)', pg_qr:'Mercado Pago QR', pg_tr:'Bank transfer to alias / CBU', pg_18:'I am over 18 and agree that my data is used to process this order.', pg_send:'Confirm order', pg_wa:'Get the details on WhatsApp', pg_pay:'Pay by card', pg_copy:'Copy', pg_done:'Order registered!', pg_order:'Order', pg_cardtxt:'Tap the button to pay by card securely on Mercado Pago. The payment is confirmed automatically.', pg_nolink:'We will send you the payment link on WhatsApp shortly.', pg_qrtxt:'Scan the QR from the Mercado Pago app (or transfer to the alias) for the order total.', pg_trtxt:'Transfer the total to these details and use the order number as reference:', pg_amount:'Amount', pg_ref:'Reference', pg_proof:'Once paid, send us the receipt on WhatsApp and we will confirm the payment and send the delivery note.', pg_ok:'✅ Payment confirmed! Thank you for your purchase.', pg_proofok:'🧾 We received your receipt: we are checking it.', pg_wait:'Sending…', pg_err:'We could not register the order. Please try again or write to us on WhatsApp.', pg_pending:'Order status: awaiting payment.', k1:'Buy through Mercado Libre', k2:'Private delivery in Rosario and surrounding area', k_ok:'I confirm that the delivery address is in Rosario or its surrounding area.', f_phone:'Phone', f_addr:'Address', f_loc:'Locality', f_notes:'Notes', k_send:'Send order',
+ pk_p:"Zeobent Cat’s Premium Trio is a hyper-clumping, dust-free, hypoallergenic cat litter, with clinoptilolite and bentonite in an exclusive formula.", pd_t:"What sets us apart", pd_p:"Features that set Zeobent Cat’s apart from ordinary cat litter.", d1:"<b>Hyper-clumping</b>Maximum-strength clumping: it forms firm, compact clumps that scoop out easily.", d2:"<b>Dust-free</b>A cleaner environment for your cat and your home.", d3:"<b>Hypoallergenic</b>Made for the whole family.", d4:"<b>Captures odor</b>It traps ammonia: it doesn’t mask it, it eliminates it.", d5:"<b>Natural, no chemicals</b>Top-quality minerals with no chemical additives.", d6:"<b>Regulates moisture</b>It absorbs moisture and captures ammonia gases from urine and feces.", d7:"<b>Long-lasting</b>Replace the litter every 4 weeks.", d8:"<b>Second life</b>Used litter from healthy cats, dried and washed with water, can be added to compost as a soil restructurer and to speed up composting. It is not applied to growing plants: the soil is used in the garden once treated. Follow the instructions on the box.", cp_t:"Inside the granule", cp_p:"Tap each component to see what it adds.", cp1:"Clinoptilolite (zeolite)", cp2:"Hyper-clumping bentonite", cp3:"Exclusive formula", cp1d:"<b>Real ammonia capture.</b> Each granule contains microscopic crystals that trap moisture and ammonia molecules through Cation Exchange Capacity, a natural mineral process.", cp2d:"<b>Maximum-strength clumping.</b> It binds waste into firm clumps that scoop out easily and keep the litter box clean.", cp3d:"<b>Zeobent Cat’s own blend.</b> It brings together Argentine minerals in an exclusive formula, developed and processed at our plant.", cp_n:"Made with Argentine minerals: bentonites, clinoptilolite (zeolites) and pure diatomite of the highest quality, meeting American market standards.", hw_t:"How it eliminates odor", hw1:"<b>Absorbs</b>Moisture is held inside the granule.", hw2:"<b>Captures</b>The crystals trap ammonia and its odor.", hw3:"<b>Clumps</b>Waste forms a firm clump that is easy to remove.", pr_t:"Top quality at an accessible price", pr_p:"It is a premium product and, even so, we designed it to be accessible to everyone: healthy for the family and for the environment.", pf_t:"Backing and traceability", pf1:"<b>Our own raw materials</b>The raw materials in the formula are our own.", pf2:"<b>Strategically located plant</b>It lets us develop and process the product to the highest quality.", pf3:"<b>American market standards</b>Produced in compliance with United States market standards.", pf4:"<b>Same quality in Mercosur and the United States</b>Simultaneous launch, keeping the highest quality.", pf_a:"It has the approval of the most demanding United States quality standards in performance, health care and environmental care.", ec_t:"More than cat litter", ec_p:"An ecosystem of products that supports your pet’s care.", ec1:"<b>Premium Trio cat litter</b>The core product, in bags, box and bulk.", ec2:"<b>Wi-Fi feeder</b>With camera and sensors, to see whether your pet is eating while you are away. Coming soon.", ec3:"<b>Veterinary and agricultural bedding</b>Developed and processed at our plant.", ec4:"<b>Industrial absorbents</b>Internationally recognized, sold in the United States.", hc1:"Hyper-clumping", hc2:"Dust-free", hc3:"Hypoallergenic", hc4:"Traceable", hl2:"See all features",
  pk_h1:"Your cat deserves the best. So does your family.", ft_in:'Zeobent Cat’s Premium Trio · cat litter',
  offer:'Launch offer', free:'Free delivery in Rosario and surrounding area', freefull:'Free private delivery in the urban area of Rosario and surrounding area.', mlvalid:'Valid throughout Argentina through Mercado Libre.',
  perkg:'per kg', consult:'Ask for price', add:'Add to cart', buynow:'Buy now', mlbtn:'Buy on Mercado Libre', mlsoon:'Mercado Libre: coming soon', quote:'Request a quote', det:'View details',
@@ -69,7 +74,7 @@ pt: {
  t1:'Por que Zeobent Cat’s',
  c1:'<b>Aglomera</b>Forma blocos firmes que saem fácil com a pá.', c2:'<b>Prende odores</b>Seus cristais capturam a amônia: não a disfarçam, eliminam.',
  c3:'<b>Natural</b>Mineral sem aditivos químicos.', c4:'<b>Hipoalergênica</b>Pensada para toda a família.', c5:'<b>Rende</b>Reponha a pedra a cada 4 semanas.',
- c6:'<b>Segunda vida</b>Seca e lavada com água, pode ser reutilizada em hortas e jardins.',
+ c6:'<b>Segunda vida</b>A pedra usada de gatos saudáveis, seca e lavada com água, entra na compostagem como reestruturador do solo e acelera o processo. Não é aplicada em plantas em crescimento: a terra é usada na horta depois de tratada. Siga as instruções da caixa.',
  ch_t:'Formas de compra', ch1:'<b>Mercado Livre</b>Pague e compre na plataforma, válido em toda a Argentina.', ch2:'<b>Entrega particular</b>Entrega na área urbana de Rosario e arredores, gratuita na promoção de lançamento.',
  ch3:'<b>Atacado e exterior</b>Consumidores, varejistas e atacadistas, da Argentina ou do exterior. Custos e forma de pagamento são combinados conforme o destino.',
  cm_t:'Comunidade Zeobent', cm_p:'Histórias e fotos de pets compartilhadas por nossos clientes.', cm_l:'Ver todas as histórias',
@@ -86,8 +91,8 @@ pt: {
  t5:'Veterinárias e clínicas', i5:'Novidades atualizadas toda semana e links públicos sobre cuidados com gatos e outros pets.', l5:'Links úteis',
  t6:'Solicitar produto', i6:'Consumidores, varejistas e atacadistas, da Argentina ou do exterior. Custos e forma de pagamento são combinados conforme o destino.',
  f_type:'Eu sou', o1:'Consumidor final', o2:'Varejista', o3:'Atacadista / distribuidor', f_country:'País e cidade', f_prod:'Produto', f_qty:'Quantidade', f_msg:'Mensagem', pw:'Lista de espera: merch e alimentador',
- kh:'Carrinho de compras', k1:'Comprar pelo Mercado Livre', k2:'Entrega particular em Rosario e arredores', k_ok:'Confirmo que o endereço de entrega fica em Rosario ou arredores.', f_phone:'Telefone', f_addr:'Endereço', f_loc:'Localidade', f_notes:'Observações', k_send:'Enviar pedido',
- pk_p:"Zeobent Cat’s Premium Trio é uma pedra sanitária hiperaglomerante, sem poeira e hipoalergênica, com clinoptilolita e bentonita em uma fórmula exclusiva.", pd_t:"O que nos diferencia", pd_p:"Características que distinguem a Zeobent Cat’s da pedra sanitária comum.", d1:"<b>Hiperaglomerante</b>Aglomerante de máximo poder: forma blocos firmes e compactos que saem fácil com a pá.", d2:"<b>Sem poeira</b>Um ambiente mais limpo para seu gato e seu lar.", d3:"<b>Hipoalergênica</b>Pensada para toda a família.", d4:"<b>Captura o odor</b>Retém a amônia: não a disfarça, elimina.", d5:"<b>Natural, sem químicos</b>Minerais de máxima qualidade, sem aditivos químicos.", d6:"<b>Regula a umidade</b>Absorve a umidade e captura os gases da amônia da urina e das fezes.", d7:"<b>Rende</b>Reponha a pedra a cada 4 semanas.", d8:"<b>Segunda vida</b>Seca e lavada com água, pode ser reutilizada em hortas e jardins.", cp_t:"O grânulo por dentro", cp_p:"Toque em cada componente para ver o que ele traz.", cp1:"Clinoptilolita (zeólita)", cp2:"Bentonita hiperaglomerante", cp3:"Fórmula exclusiva", cp1d:"<b>Captura real da amônia.</b> Cada grânulo contém cristais microscópicos que prendem as moléculas de umidade e de amônia por meio da Capacidade de Troca Catiônica, um processo mineral natural.", cp2d:"<b>Aglomerante de máximo poder.</b> Forma blocos firmes com os resíduos, que saem fácil com a pá e mantêm a bandeja limpa.", cp3d:"<b>Combinação própria da Zeobent Cat’s.</b> Reúne minerais argentinos em uma fórmula exclusiva, desenvolvida e processada em nossa planta.", cp_n:"Produzido com minerais argentinos: bentonitas, clinoptilolita (zeólitas) e diatomitas puras de máxima qualidade, cumprindo as normas do mercado americano.", hw_t:"Como elimina o odor", hw1:"<b>Absorve</b>A umidade fica retida no grânulo.", hw2:"<b>Captura</b>Os cristais prendem a amônia e seu odor.", hw3:"<b>Aglomera</b>Os resíduos formam um bloco firme, fácil de retirar.", pr_t:"Máxima qualidade, a um preço acessível", pr_p:"É um produto premium e, mesmo assim, o pensamos acessível para todos: saudável para a família e para o meio ambiente.", pf_t:"Respaldo e rastreabilidade", pf1:"<b>Matérias-primas próprias</b>As matérias-primas que compõem a fórmula são próprias.", pf2:"<b>Planta estrategicamente localizada</b>Permite desenvolver e processar o produto com a máxima qualidade.", pf3:"<b>Normas do mercado americano</b>Produzido em conformidade com as normas do mercado dos Estados Unidos.", pf4:"<b>Mesma qualidade no Mercosul e nos Estados Unidos</b>Lançamento simultâneo, mantendo a máxima qualidade.", pf_a:"Conta com a aprovação dos mais exigentes padrões de qualidade dos Estados Unidos em desempenho, cuidado com a saúde e com o meio ambiente.", ec_t:"Mais que uma pedra sanitária", ec_p:"Um ecossistema de produtos que acompanha o cuidado do seu pet.", ec1:"<b>Pedra sanitária Premium Trio</b>O produto central, em sacos, caixa e a granel.", ec2:"<b>Alimentador Wi-Fi</b>Com câmera e sensores, para ver se seu pet está comendo enquanto você está fora. Em breve.", ec3:"<b>Camas veterinárias e agrícolas</b>Desenvolvidas e processadas em nossa planta.", ec4:"<b>Absorventes industriais</b>De reconhecimento internacional, comercializados nos Estados Unidos.", hc1:"Hiperaglomerante", hc2:"Sem poeira", hc3:"Hipoalergênica", hc4:"Com rastreabilidade", hl2:"Ver todas as características",
+ kh:'Carrinho de compras', pg_wa2:'Enviar meu pedido pelo WhatsApp', pg_sendwa:'Falta um passo: toque no botão para nos enviar o pedido pelo WhatsApp e confirmamos.', pg_proof2:'Envie o pedido pelo WhatsApp: passamos os dados de pagamento, você paga e manda o comprovante; confirmamos o pagamento e enviamos o romaneio.', pg_h:'Pagar agora', pg_p:'Preencha seus dados, escolha como pagar e você recebe as instruções na hora e também pelo WhatsApp.', pg_m:'Forma de pagamento', pg_card:'Cartão de crédito ou débito (link de pagamento)', pg_qr:'QR do Mercado Pago', pg_tr:'Transferência para alias / CBU', pg_18:'Sou maior de 18 anos e aceito que meus dados sejam usados para gerenciar este pedido.', pg_send:'Confirmar pedido', pg_wa:'Receber os dados pelo WhatsApp', pg_pay:'Pagar com cartão', pg_copy:'Copiar', pg_done:'Pedido registrado!', pg_order:'Pedido', pg_cardtxt:'Toque no botão para pagar com cartão com segurança no Mercado Pago. O pagamento é confirmado automaticamente.', pg_nolink:'Enviaremos o link de pagamento pelo WhatsApp em breve.', pg_qrtxt:'Escaneie o QR no app do Mercado Pago (ou transfira para o alias) pelo total do pedido.', pg_trtxt:'Transfira o total para estes dados e use o número do pedido como referência:', pg_amount:'Valor', pg_ref:'Referência', pg_proof:'Depois de pagar, envie o comprovante pelo WhatsApp e confirmamos o pagamento e o romaneio.', pg_ok:'✅ Pagamento confirmado! Obrigado pela compra.', pg_proofok:'🧾 Recebemos seu comprovante: estamos verificando.', pg_wait:'Enviando…', pg_err:'Não conseguimos registrar o pedido. Tente de novo ou escreva pelo WhatsApp.', pg_pending:'Status do pedido: aguardando pagamento.', k1:'Comprar pelo Mercado Livre', k2:'Entrega particular em Rosario e arredores', k_ok:'Confirmo que o endereço de entrega fica em Rosario ou arredores.', f_phone:'Telefone', f_addr:'Endereço', f_loc:'Localidade', f_notes:'Observações', k_send:'Enviar pedido',
+ pk_p:"Zeobent Cat’s Premium Trio é uma pedra sanitária hiperaglomerante, sem poeira e hipoalergênica, com clinoptilolita e bentonita em uma fórmula exclusiva.", pd_t:"O que nos diferencia", pd_p:"Características que distinguem a Zeobent Cat’s da pedra sanitária comum.", d1:"<b>Hiperaglomerante</b>Aglomerante de máximo poder: forma blocos firmes e compactos que saem fácil com a pá.", d2:"<b>Sem poeira</b>Um ambiente mais limpo para seu gato e seu lar.", d3:"<b>Hipoalergênica</b>Pensada para toda a família.", d4:"<b>Captura o odor</b>Retém a amônia: não a disfarça, elimina.", d5:"<b>Natural, sem químicos</b>Minerais de máxima qualidade, sem aditivos químicos.", d6:"<b>Regula a umidade</b>Absorve a umidade e captura os gases da amônia da urina e das fezes.", d7:"<b>Rende</b>Reponha a pedra a cada 4 semanas.", d8:"<b>Segunda vida</b>A pedra usada de gatos saudáveis, seca e lavada com água, entra na compostagem como reestruturador do solo e acelera o processo. Não é aplicada em plantas em crescimento: a terra é usada na horta depois de tratada. Siga as instruções da caixa.", cp_t:"O grânulo por dentro", cp_p:"Toque em cada componente para ver o que ele traz.", cp1:"Clinoptilolita (zeólita)", cp2:"Bentonita hiperaglomerante", cp3:"Fórmula exclusiva", cp1d:"<b>Captura real da amônia.</b> Cada grânulo contém cristais microscópicos que prendem as moléculas de umidade e de amônia por meio da Capacidade de Troca Catiônica, um processo mineral natural.", cp2d:"<b>Aglomerante de máximo poder.</b> Forma blocos firmes com os resíduos, que saem fácil com a pá e mantêm a bandeja limpa.", cp3d:"<b>Combinação própria da Zeobent Cat’s.</b> Reúne minerais argentinos em uma fórmula exclusiva, desenvolvida e processada em nossa planta.", cp_n:"Produzido com minerais argentinos: bentonitas, clinoptilolita (zeólitas) e diatomitas puras de máxima qualidade, cumprindo as normas do mercado americano.", hw_t:"Como elimina o odor", hw1:"<b>Absorve</b>A umidade fica retida no grânulo.", hw2:"<b>Captura</b>Os cristais prendem a amônia e seu odor.", hw3:"<b>Aglomera</b>Os resíduos formam um bloco firme, fácil de retirar.", pr_t:"Máxima qualidade, a um preço acessível", pr_p:"É um produto premium e, mesmo assim, o pensamos acessível para todos: saudável para a família e para o meio ambiente.", pf_t:"Respaldo e rastreabilidade", pf1:"<b>Matérias-primas próprias</b>As matérias-primas que compõem a fórmula são próprias.", pf2:"<b>Planta estrategicamente localizada</b>Permite desenvolver e processar o produto com a máxima qualidade.", pf3:"<b>Normas do mercado americano</b>Produzido em conformidade com as normas do mercado dos Estados Unidos.", pf4:"<b>Mesma qualidade no Mercosul e nos Estados Unidos</b>Lançamento simultâneo, mantendo a máxima qualidade.", pf_a:"Conta com a aprovação dos mais exigentes padrões de qualidade dos Estados Unidos em desempenho, cuidado com a saúde e com o meio ambiente.", ec_t:"Mais que uma pedra sanitária", ec_p:"Um ecossistema de produtos que acompanha o cuidado do seu pet.", ec1:"<b>Pedra sanitária Premium Trio</b>O produto central, em sacos, caixa e a granel.", ec2:"<b>Alimentador Wi-Fi</b>Com câmera e sensores, para ver se seu pet está comendo enquanto você está fora. Em breve.", ec3:"<b>Camas veterinárias e agrícolas</b>Desenvolvidas e processadas em nossa planta.", ec4:"<b>Absorventes industriais</b>De reconhecimento internacional, comercializados nos Estados Unidos.", hc1:"Hiperaglomerante", hc2:"Sem poeira", hc3:"Hipoalergênica", hc4:"Com rastreabilidade", hl2:"Ver todas as características",
  pk_h1:"Seu gato merece o melhor. Sua família também.", ft_in:'Zeobent Cat’s Premium Trio · pedra sanitária',
  offer:'Oferta de lançamento', free:'Entrega grátis em Rosario e arredores', freefull:'Entrega particular gratuita na área urbana de Rosario e arredores.', mlvalid:'Válida em toda a Argentina pelo Mercado Livre.',
  perkg:'por kg', consult:'Consultar preço', add:'Adicionar ao carrinho', buynow:'Comprar agora', mlbtn:'Comprar no Mercado Livre', mlsoon:'Mercado Livre: em breve', quote:'Solicitar cotação', det:'Ver detalhes',
@@ -107,8 +112,27 @@ const money = n => '$ ' + Number(n).toLocaleString('es-AR');
 const getJSON = u => Promise.resolve(((window.ZC || {})[u.split('/').pop().replace(/\.(json|js)$/, '')] || []).slice());
 const hooks = [];
 let PRODS = [], CART = [];
-try { CART = JSON.parse(localStorage.getItem('zc') || '[]'); } catch (_) {}
-const saveCart = () => { try { localStorage.setItem('zc', JSON.stringify(CART)); } catch (_) {} badge(); };
+// El carrito se guarda en varios lugares a la vez (localStorage, sessionStorage, window.name y cookie) y se lee el más reciente:
+// así no se pierde al cambiar de página aunque el navegador bloquee alguno (archivo abierto desde la PC, navegador de Instagram/WhatsApp, modo privado).
+function cartRead() {
+  const cands = [];
+  const add = raw => { try { if (!raw) return; const j = JSON.parse(raw); if (Array.isArray(j)) cands.push({ t: 0, i: j }); else if (j && Array.isArray(j.i)) cands.push({ t: +j.t || 0, i: j.i }); } catch (_) {} };
+  try { add(localStorage.getItem('zc')); } catch (_) {}
+  try { add(sessionStorage.getItem('zc')); } catch (_) {}
+  try { if (/^ZC1:/.test(window.name)) add(decodeURIComponent(window.name.slice(4))); } catch (_) {}
+  try { const m = /(?:^|;\s*)zc=([^;]*)/.exec(document.cookie); if (m) add(decodeURIComponent(m[1])); } catch (_) {}
+  cands.sort((a, b) => b.t - a.t);
+  return ((cands[0] && cands[0].i) || []).filter(x => x && typeof x.id === 'string' && +x.q > 0).map(x => ({ id: x.id, q: Math.min(999, Math.floor(+x.q)) }));
+}
+function cartWrite() {
+  const raw = JSON.stringify({ t: Date.now(), i: CART });
+  try { localStorage.setItem('zc', raw); } catch (_) {}
+  try { sessionStorage.setItem('zc', raw); } catch (_) {}
+  try { if (!window.name || /^ZC1:/.test(window.name)) window.name = 'ZC1:' + encodeURIComponent(raw); } catch (_) {}
+  try { document.cookie = 'zc=' + encodeURIComponent(raw) + ';path=/;max-age=2592000;SameSite=Lax'; } catch (_) {}
+}
+CART = cartRead();
+const saveCart = () => { cartWrite(); badge(); };
 const badge = () => { const c = $('#cc'); if (c) c.textContent = CART.reduce((a, i) => a + i.q, 0); };
 const prod = id => PRODS.find(p => p.id === id);
 
@@ -125,7 +149,7 @@ function shell() {
 <a class="cartlnk" href="carrito.html"><span data-i="cart">Carrito</span><b id="cc">0</b></a></div></div>
 <nav aria-label="Principal">${NAV.map(n => `<a href="${n[0]}" data-i="${n[1]}"${n[0] === cur ? ' class="on" aria-current="page"' : ''}>${n[2]}</a>`).join('')}</nav></header>`;
   $('#foot').innerHTML = `<footer><div class="fg">
-<div><strong>Zeobent Cat’s Premium Trio</strong><br><span data-i="ft_in">Piedra sanitaria para gatos</span><br><br>American Top Zeolit Inc. · <a style="display:inline" href="https://www.americantopzeolit.com">americantopzeolit.com</a><br><a href="mailto:zeolitcatsusa@gmail.com">zeolitcatsusa@gmail.com</a>+1 (949) 213-9168 · +54 (0341) 627-2609</div>
+<div><strong>Zeobent Cat’s Premium Trio</strong><br><span data-i="ft_in">Piedra sanitaria para gatos</span><br><br>American Top Zeolit Inc. · <a style="display:inline" href="https://www.americantopzeolit.com">americantopzeolit.com</a><br><a href="mailto:zeolitcatsusa@gmail.com">zeolitcatsusa@gmail.com</a>+1 (949) 213-9168 · +54 (0341) 627-2609<br>WhatsApp Business: +54 9 341 542-1376 (Argentina) · +1 949 662-8138 (USA)</div>
 <div><h4 data-i="fn">Navegación</h4>${NAV.map(n => `<a href="${n[0]}" data-i="${n[1]}">${n[2]}</a>`).join('')}<a href="carrito.html" data-i="cart">Carrito</a></div>
 <div><h4 data-i="fc">Formas de compra</h4><p data-i="fc1">Mercado Libre: todo el territorio de la República Argentina</p><p data-i="fc2">Envío particular gratuito en el eje urbano de Rosario y zona de influencia (promoción de lanzamiento)</p><p data-i="fc3">Pedidos mayoristas y del exterior: consulte</p></div>
 </div><div class="fine">© Zeobent Cat’s Premium Trio</div></footer>`;
@@ -229,6 +253,7 @@ function renderCart() {
   const ls = cartLines();
   if (!ls.length) { box.innerHTML = `<p>${tr('ecart')}</p><p><a class="btn" href="tienda.html">${tr('gotoshop')}</a></p>`; $('#checkout').hidden = true; return; }
   $('#checkout').hidden = false;
+  if (!$('#sum')) box.innerHTML = '<div class="cart"><div id="cartlines"></div><div id="sum" class="sum"></div></div>';
   $('#cartlines').innerHTML = ls.map(x => `<div class="line"><a href="articulo.html?id=${encodeURIComponent(x.p.id)}"><img src="${esc(x.p.img)}" alt=""></a><div><b>${esc(x.p.corto)}</b><br>${money(x.p.precio)}${lineDisc(x) ? `<br><span class="dtag">${tr('dtag').replace('{p}', CFG.desc.pct)}: ${money(lineTot(x))}</span>` : ''}<br><button class="link" data-rm="${esc(x.p.id)}">${tr('rm')}</button></div><div class="qty"><button data-m="${esc(x.p.id)}" aria-label="-">−</button><input type="number" min="1" max="999" value="${x.q}" data-q="${esc(x.p.id)}" aria-label="${tr('qty')}"><button data-p="${esc(x.p.id)}" aria-label="+">+</button></div></div>`).join('');
   $('#sum').innerHTML = `<div class="row"><span>${tr('sub')}</span><span>${money(cartSub())}</span></div>${cartDisc() ? `<div class="row save"><span>${tr('disc')}</span><span>− ${money(cartDisc())}</span></div>` : ''}<div class="row"><span>${tr('ship')}</span><span>${cartFree() ? tr('shipfree') : tr('shipTBD')}</span></div><div class="row tot"><span>${tr('tot')}</span><span>${money(cartTotal())}</span></div>`;
   $('#mllist').innerHTML = ls.map(x => `<p>${x.q} × ${esc(x.p.corto)} ${x.p.ml_url ? `<a class="btn ml" href="${esc(x.p.ml_url)}" target="_blank" rel="noopener">${tr('mlgo')}</a>` : `<em>${tr('mlnone')}</em>`}</p>`).join('');
@@ -272,6 +297,79 @@ async function loadVets() {
     if (v.url) { const a = document.createElement('a'); a.href = v.url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = v.url; d.append(a); }
     box.append(d);
   });
+}
+
+
+// ===== Cobros: pedido + forma de pago (servidor de pedidos) =====
+async function loadRemote() {
+  if (!CFG.api) return;
+  try {
+    const c = new AbortController(), t = setTimeout(() => c.abort(), 4500);
+    const r = await fetch(CFG.api + '/api/config', { signal: c.signal }); clearTimeout(t);
+    if (!r.ok) return; const j = await r.json();
+    PRODS.forEach(p => { if (j.ml && j.ml[p.id]) p.ml_url = j.ml[p.id]; if (j.amazon && j.amazon[p.id]) p.amazon_url = j.amazon[p.id]; });
+    CFG.metodos = j.metodos || null;
+  } catch (_) {}
+}
+const httpsOnly = u => /^(https:\/\/|assets\/)/.test(u || '') ? u : '';
+function initPay() {
+  const pp = $('#paypanel'); if (!pp) return;
+  const M = CFG.metodos, server = !!(CFG.api && M && (M.tarjeta || M.mp_qr || M.transferencia)), old = $('#oldform'), ml = $('#mlpanel');
+  pp.hidden = false; if (old) old.hidden = true; if (ml && M && M.mercadolibre === false) ml.hidden = true;
+  const q = new URLSearchParams(location.search).get('pedido');
+  if (CFG.api && /^ZB-[A-Z0-9]{8}$/.test(q || '')) { showReturn(q); return; }
+  const avail = server ? M : { tarjeta: true, mp_qr: true, transferencia: true };        // sin servidor: las 3 formas de pago, y el pedido sale por WhatsApp
+  $('#paym').innerHTML = [['tarjeta', 'pg_card'], ['mp_qr', 'pg_qr'], ['transferencia', 'pg_tr']].filter(([k]) => avail[k]).map(([k, t], i) => `<label class="radio"><input type="radio" name="metodo" value="${k}"${i ? '' : ' checked'}><span data-i="${t}">${tr(t)}</span></label>`).join('');
+  const f = $('#payform');
+  f.onsubmit = async e => {
+    e.preventDefault(); const st = $('.st', f), d = new FormData(f), btn = $('button.btn', f); if (d.get('_gotcha')) return;
+    const lines = cartLines(); if (!lines.length) { st.textContent = tr('ecart'); return; }
+    if (!server) { staticOrder(d, lines); return; }
+    st.textContent = tr('pg_wait'); btn.disabled = true;
+    try {
+      const r = await fetch(CFG.api + '/api/orders', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ items: lines.map(x => ({ id: x.p.id, q: x.q })), cliente: { nombre: d.get('nombre'), telefono: d.get('telefono'), email: d.get('email'), localidad: d.get('localidad'), domicilio: d.get('domicilio'), observaciones: d.get('observaciones') }, metodo: d.get('metodo'), mayor: !!d.get('mayor'), idioma: document.documentElement.lang || 'es', _gotcha: d.get('_gotcha') || '' }) });
+      const j = await r.json();
+      if (!r.ok || !j.ok) { st.textContent = j.error || tr('pg_err'); btn.disabled = false; return; }
+      CART = []; saveCart(); renderCart(); showResult(j);
+    } catch (_) { st.textContent = tr('pg_err'); btn.disabled = false; }
+  };
+}
+// Pedido sin servidor: se arma el resumen, se muestran los datos de pago cargados en data/config.js y el pedido se envía por WhatsApp.
+function staticOrder(d, lines) {
+  const ch = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789', rnd = () => { const a = new Uint8Array(6); (window.crypto || { getRandomValues: x => x.forEach((_, i) => (x[i] = Math.random() * 256)) }).getRandomValues(a); return [...a].map(x => ch[x % ch.length]).join(''); };
+  const code = 'WEB-' + rnd(), P = CFG.pagos || {}, m = d.get('metodo'), MN = { tarjeta: 'Tarjeta (link de pago)', mp_qr: 'QR de Mercado Pago', transferencia: 'Transferencia / alias' }[m] || m;
+  const msg = ['Hola, quiero pagar mi pedido ' + code, ...lines.map(x => '• ' + x.q + ' × ' + x.p.corto + ' — ' + money(lineTot(x))), 'Total: ' + money(cartTotal()) + ' (envío: ' + (cartFree() ? 'gratis en Rosario y zona' : 'a coordinar') + ')', 'Forma de pago: ' + MN,
+    'Nombre: ' + d.get('nombre') + ' · WhatsApp: ' + d.get('telefono') + ' · Email: ' + d.get('email'), 'Entrega: ' + d.get('domicilio') + ', ' + d.get('localidad') + (d.get('observaciones') ? ' · ' + d.get('observaciones') : '')].join('\n');
+  const pago = m === 'tarjeta' ? { tipo: 'tarjeta', link: (P.tarjeta || {}).link } : m === 'mp_qr' ? { tipo: 'mp_qr', qr: (P.mp_qr || {}).qr, alias: (P.mp_qr || {}).alias } : Object.assign({ tipo: 'transferencia' }, P.transferencia || {});
+  showResult({ id: code, total: cartTotal(), pago, wa: 'https://wa.me/' + CFG.wa + '?text=' + encodeURIComponent(msg), local: true });
+}
+function showResult(j) {
+  const pr = $('#payres'), p = j.pago || {}, cp = v => v ? `<button type="button" class="link" data-copy="${esc(v)}">${tr('pg_copy')}</button>` : '', li = (k, v) => v ? `<li>${k}: <b>${esc(v)}</b> ${cp(v)}</li>` : '';
+  $('#cartbox').hidden = true; $('#checkout').hidden = true; pr.hidden = false;
+  let h = `<div class="panel paybox"><h2>${tr('pg_done')}</h2><p>${tr('pg_order')}: <b>${esc(j.id)}</b> · ${tr('tot')}: <b>${money(j.total)}</b></p>`;
+  if (p.tipo === 'tarjeta') h += httpsOnly(p.link) ? `<p>${tr('pg_cardtxt')}</p><p><a class="btn" href="${esc(p.link)}" target="_blank" rel="noopener">${tr('pg_pay')}</a></p>` : `<p>${tr('pg_nolink')}</p>`;
+  if (p.tipo === 'mp_qr') h += `<p>${tr('pg_qrtxt')}</p>${httpsOnly(p.qr) ? `<img class="qrimg" src="${esc(p.qr)}" alt="QR Mercado Pago">` : ''}<ul class="payd">${li('Alias', p.alias)}<li>${tr('pg_amount')}: <b>${money(j.total)}</b></li></ul>`;
+  if (p.tipo === 'transferencia') h += `<p>${tr('pg_trtxt')}</p><ul class="payd">${li('Alias', p.alias)}${li('CBU/CVU', p.cbu)}${li('Titular', p.titular)}${li('Banco', p.banco)}${li('CUIT/CUIL', p.cuit)}<li>${tr('pg_amount')}: <b>${money(j.total)}</b></li><li>${tr('pg_ref')}: <b>${esc(j.id)}</b> ${cp(j.id)}</li></ul>`;
+  h += `<p>${tr(j.local ? 'pg_proof2' : 'pg_proof')}</p>${httpsOnly(j.wa) ? `<p><a class="btn ml" href="${esc(j.wa)}" target="_blank" rel="noopener">${tr(j.local ? 'pg_wa2' : 'pg_wa')}</a></p>` : ''}<p class="st" id="paystat" role="status">${tr('pg_pending')}</p></div>`;
+  pr.innerHTML = h; pr.onclick = e => { const b = e.target.closest('[data-copy]'); if (b && navigator.clipboard) navigator.clipboard.writeText(b.dataset.copy).catch(() => {}); };
+  if (j.local) { const w = $('a.ml', pr); if (w) w.onclick = () => { CART = []; saveCart(); renderCart(); }; $('#paystat').textContent = tr('pg_sendwa'); } else trackOrder(j.id);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function showReturn(id) {
+  $('#cartbox').hidden = true; $('#checkout').hidden = true; const pr = $('#payres'); pr.hidden = false;
+  pr.innerHTML = `<div class="panel paybox"><h2>${tr('pg_order')} <b>${esc(id)}</b></h2><p class="st" id="paystat" role="status">${tr('pg_pending')}</p></div>`; trackOrder(id);
+}
+function trackOrder(id) {
+  let n = 0; const tick = async () => {
+    if (++n > 90 || !$('#paystat')) return;
+    try {
+      const r = await fetch(CFG.api + '/api/orders/' + id + '/status'), j = await r.json();
+      if (j.estado === 'pagado' || j.estado === 'entregado') { $('#paystat').textContent = tr('pg_ok'); return; }
+      if (j.estado === 'comprobante_recibido') $('#paystat').textContent = tr('pg_proofok');
+    } catch (_) {}
+    setTimeout(tick, 8000);
+  };
+  setTimeout(tick, 3000);
 }
 
 // ===== Formularios =====
@@ -357,13 +455,13 @@ function initGranule() {
 // ===== Inicio =====
 (async () => {
   shell();
-  PRODS = (await getJSON('data/products.json')).filter(p => p.visible !== false); badge();
+  PRODS = (await getJSON('data/products.json')).filter(p => p.visible !== false); badge(); await loadRemote();
   hooks.push(() => { const o = PRODS.find(p => p.oferta && p.precio != null), u = $('.util'); if (!o) { u.hidden = true; return; } u.hidden = false; $('#utxt').textContent = (o.etiqueta || tr('offer')) + ': ' + o.corto + ' · ' + money(o.precio) + (o.envio_gratis_local ? ' · ' + tr('free') : ''); });
   const oh = $('#offer-home'); if (oh) hooks.push(() => { oh.innerHTML = PRODS.filter(p => p.oferta).map(offerBox).join(''); });
   const hp = $('#home-products'); if (hp) hooks.push(() => { hp.innerHTML = PRODS.map(pcard).join(''); });
   const pc = $('#price-cards'); if (pc) hooks.push(() => { pc.innerHTML = PRODS.filter(p => p.precio != null).map(pcard).join(''); });
   const os = $('#offers'); if (os) hooks.push(() => { os.innerHTML = PRODS.filter(p => p.oferta).map(offerBox).join(''); });
-  initSearch(); initGranule(); initShop(); initArticle(); initCart(); initForms(); initMascot();
+  initSearch(); initGranule(); initShop(); initArticle(); initCart(); initPay(); initForms(); initMascot();
   hooks.push(() => { loadGallery(); loadOps(); });
   loadVets();
   let saved = 'es'; try { saved = localStorage.getItem('zl') || (navigator.language || 'es').slice(0, 2); } catch (_) {}
